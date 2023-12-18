@@ -14,7 +14,7 @@ fn main() {
     let mut attempt = 0;
     loop {
         if attempt < MAX_ATTEMPTS {
-            print!("[{attempt}/{MAX_ATTEMPTS}] ");
+            print!("[{attempt}/{MAX_ATTEMPTS}] ", attempt = attempt + 1);
             stdout().flush().unwrap();
             let mut guess = String::new();
             stdin().read_line(&mut guess).unwrap();
