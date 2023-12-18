@@ -36,10 +36,10 @@ fn main() {
                         }
                     }
                 } else if guess < answer {
-                    println!("No! The answer is BIGGER!");
+                    println!("No! The answer is ᵇᶦᵍᵍᵉʳ!");
                     attempt += 1;
                 } else if guess > answer {
-                    println!("No! The answer is SMALLER!");
+                    println!("No! The answer is ₛₘₐₗₗₑᵣ!");
                     attempt += 1;
                 }
                 Err(_) => {
