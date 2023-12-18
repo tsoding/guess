@@ -1,4 +1,4 @@
-use std::io::{stdin, stdout, Write};
+use std::io::{stdin, stdout, Write, ErrorKind};
 use std::time::{SystemTime, UNIX_EPOCH};
 use random::Source;
 
@@ -12,12 +12,21 @@ fn main() {
     let mut source = random::default(SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs());
     let mut answer: usize = source.read::<usize>()%(HIGH - LOW + 1) + LOW;
     let mut attempt = 0;
-    loop {
+    'next: loop {
         if attempt < MAX_ATTEMPTS {
             print!("[{attempt}/{MAX_ATTEMPTS}] ", attempt = attempt + 1);
             stdout().flush().unwrap();
             let mut guess = String::new();
-            stdin().read_line(&mut guess).unwrap();
+            match stdin().read_line(&mut guess) {
+                Ok(_) => {},
+                Err(err) => match err.kind() {
+                    ErrorKind::InvalidData => {
+                        println!("Stop typing gibberish and play the game already ._.");
+                        continue 'next;
+                    }
+                    _ => panic!("Something went wrong: {err}"),
+                }
+            }
             match guess.trim().parse::<usize>() {
                 Ok(guess) => if guess == answer {
                     println!("Yes! It was {answer}! You won!");
@@ -25,7 +34,19 @@ fn main() {
                     print!("Try again? [Y/n] ");
                     stdout().flush().unwrap();
                     let mut yorn = String::new();
-                    stdin().read_line(&mut yorn).unwrap();
+                    match stdin().read_line(&mut yorn) {
+                        Ok(_) => {},
+                        Err(err) => match err.kind() {
+                            ErrorKind::InvalidData => {
+                                answer = source.read::<usize>()%(HIGH - LOW + 1) + LOW;
+                                attempt = 0;
+                                println!("I generated a Random Number from {LOW} to {HIGH}.");
+                                println!("You have {MAX_ATTEMPTS} attempts to guess it.");
+                                continue 'next;
+                            }
+                            _ => panic!("Something went wrong: {err}"),
+                        }
+                    }
                     match yorn.trim().to_uppercase().as_str() {
                         "N" | "NO" => break,
                         _ => {
@@ -52,7 +73,19 @@ fn main() {
             print!("Try again? [Y/n] ");
             stdout().flush().unwrap();
             let mut yorn = String::new();
-            stdin().read_line(&mut yorn).unwrap();
+            match stdin().read_line(&mut yorn) {
+                Ok(_) => {},
+                Err(err) => match err.kind() {
+                    ErrorKind::InvalidData => {
+                        answer = source.read::<usize>()%(HIGH - LOW + 1) + LOW;
+                        attempt = 0;
+                        println!("I generated a Random Number from {LOW} to {HIGH}.");
+                        println!("You have {MAX_ATTEMPTS} attempts to guess it.");
+                        continue 'next;
+                    }
+                    _ => panic!("Something went wrong: {err}"),
+                }
+            }
             match yorn.trim().to_uppercase().as_str() {
                 "N" | "NO" => break,
                 _ => {
